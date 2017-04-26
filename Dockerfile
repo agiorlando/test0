@@ -5,5 +5,8 @@ MAINTAINER Ruben Knol <c.minor6@gmail.com>
 # serves files from
 COPY . /srv/symfony
 
+# Set file permissions so that
+RUN chmod -R 777 /srv/symfony
+
 # Install library dependencies with Composer
 RUN composer install

@@ -12,6 +12,7 @@ before_install:
   - composer install
 
 script:
+  - php vendor/bin/php-cs-fixer fix --dry-run --diff
   - ./vendor/bin/phpunit
 
 after_success:
