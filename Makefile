@@ -31,6 +31,9 @@ stop-dev:
 status:
 	@docker-compose ps
 
+status-dev:
+	@docker-compose -f docker-compose-dev.yml ps
+
 stop:
 	@echo 'Stopping all containers...'
 	@docker-compose stop
@@ -45,3 +48,6 @@ destroy:
 
 shell:
 	@docker-compose -f docker-compose-dev.yml exec php-fpm bash
+
+style:
+	@docker-compose -f docker-compose-dev.yml exec -T php vendor/bin/php-cs-fixer fix --dry-run --diff

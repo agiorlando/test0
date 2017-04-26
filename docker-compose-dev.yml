@@ -6,7 +6,7 @@ services:
   # to pull the latest version of this image.
   mysql-database:
       image: rknol/test0-mysql:latest
-      container_name: test0-mysql
+      container_name: test0-dev-mysql
       ports:
         - "3306:3306"  # mysql -h 127.0.0.1 -u test0 -ptest0_pw test0
 
@@ -15,7 +15,7 @@ services:
   # with a network filesystem mount.
   php-fpm:
       build: .
-      container_name: test0-php-fpm
+      container_name: test0-dev-php-fpm
       links:
         - mysql-database:test0-mysql
       volumes:
@@ -26,7 +26,7 @@ services:
   # pre-configured for Symfony projects.
   nginx:
       image: rknol/nginx-symfony:latest
-      container_name: test0-nginx
+      container_name: test0-dev-nginx
       ports:
         - "5500:5500"
       links:
