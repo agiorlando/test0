@@ -11,5 +11,5 @@ before_install:
 
 script:
   - ./vendor/bin/phpunit
-#  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-#  - docker push rknol/test0
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push rknol/test0
