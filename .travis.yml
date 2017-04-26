@@ -2,6 +2,9 @@ sudo: required
 
 language: php
 
+php:
+  - '7.0'
+
 services:
   - docker
 
@@ -10,6 +13,8 @@ before_install:
   - composer install
 
 script:
-  - ./vendor/bin/phpunit
+  - ./bin/phpunit
+
+after_script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push rknol/test0
