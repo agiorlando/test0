@@ -15,8 +15,10 @@ script:
   - php vendor/bin/php-cs-fixer fix --dry-run --diff
   - ./vendor/bin/phpunit
 
+after_script:
+  - rm -rf ./var/cache/* vendor ./var/sessions/* ./var/logs/* .php_cs_cache
+
 after_success:
-  - rm -rf ./var/cache/*  # If we don't do this, docker build will fail
   - docker build -t rknol/test0 .
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push rknol/test0
