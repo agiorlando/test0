@@ -14,10 +14,6 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $dbal = $this->get('database_connection');
-        $res = $dbal->fetchAssoc('SELECT count(*) FROM customers')['count(*)'];
-        return new Response((string) $res);
-
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
