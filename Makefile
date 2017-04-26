@@ -1,5 +1,6 @@
 build:
 	@echo 'Building all containers for development...'
+	@rm -rf ./var/cache/* vendor/* ./var/sessions/* ./var/logs/* .php_cs_cache
 	@docker-compose -f docker-compose-dev.yml build
 	@echo 'Done'
 
