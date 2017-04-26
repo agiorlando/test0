@@ -9,12 +9,12 @@ services:
   - docker
 
 before_install:
-  - docker build -t rknol/test0 .
   - composer install
 
 script:
   - ./bin/phpunit
 
-after_script:
+after_success:
+  - docker build -t rknol/test0 .
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push rknol/test0
