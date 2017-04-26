@@ -9,4 +9,4 @@ COPY . /srv/symfony
 RUN chmod -R 777 /srv/symfony
 
 # Install library dependencies with Composer
-RUN composer install
+RUN composer install --no-interaction

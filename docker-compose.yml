@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+  # The database for this project lives inside the
+  # image 'rknol/test0-mysql'. To update it, you have
+  # to pull the latest version of this image.
+  mysql-database:
+      image: rknol/test0-mysql:latest
+      container_name: test0-mysql
+      ports:
+        - "3306:3306"  # mysql -h 127.0.0.1 -u test0 -ptest0_pw test0
+
+  # Initially it will copy the project into the image
+  # on-build, but then it will overwrite the folder
+  # with a network filesystem mount.
+  php-fpm:
+      image: rknol/test0:latest
+      container_name: test0-php-fpm
+      links:
+        - mysql-database:test0-mysql
+
+  # The nginx container is just a generic nginx
+  # container I developed that's specifically
+  # pre-configured for Symfony projects.
+  nginx:
+      image: rknol/nginx-symfony:latest
+      container_name: test0-nginx
+      ports:
+        - "5500:5500"
+      links:
+        - php-fpm:php-fpm-symfony
+      volumes_from:
+        - php-fpm

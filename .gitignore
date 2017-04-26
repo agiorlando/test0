@@ -16,3 +16,4 @@
 /vendor/
 /web/bundles/
 cs_fixer_tmp*
+.php_cs.cache
