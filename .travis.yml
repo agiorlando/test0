@@ -17,8 +17,8 @@ script:
 
 after_script:
   - rm -rf ./var/cache/* vendor ./var/sessions/* ./var/logs/* .php_cs_cache
+  - docker build -t rknol/test0 .
 
 after_success:
-  - docker build -t rknol/test0 .
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push rknol/test0
