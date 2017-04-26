@@ -14,8 +14,6 @@ before_install:
 script:
   - php vendor/bin/php-cs-fixer fix --dry-run --diff
   - ./vendor/bin/phpunit
-
-after_script:
   - rm -rf ./var/cache/* vendor ./var/sessions/* ./var/logs/* .php_cs_cache
   - docker build -t rknol/test0 .
 
