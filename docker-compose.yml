@@ -10,9 +10,8 @@ services:
       ports:
         - "3306:3306"  # mysql -h 127.0.0.1 -u test0 -ptest0_pw test0
 
-  # Initially it will copy the project into the image
-  # on-build, but then it will overwrite the folder
-  # with a network filesystem mount.
+  # Unlike for development, we simply run the latest version
+  # of the container that has the project code.
   php-fpm:
       image: rknol/test0:latest
       container_name: test0-php-fpm
