@@ -51,4 +51,7 @@ shell:
 	@docker-compose -f docker-compose-dev.yml exec php-fpm bash
 
 style:
-	@docker-compose -f docker-compose-dev.yml exec -T php vendor/bin/php-cs-fixer fix --dry-run --diff
+	@docker-compose -f docker-compose-dev.yml exec -T php-fpm php vendor/bin/php-cs-fixer fix --dry-run --diff
+
+test:
+	@docker-compose -f docker-compose-dev.yml exec -T php-fpm php vendor/bin/phpunit

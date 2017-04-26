@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
 {
@@ -14,8 +15,8 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         $dbal = $this->get('database_connection');
-        print_r($dbal->fetchAssoc('SELECT count(*) FROM customers'));
-        exit;
+        $res = $dbal->fetchAssoc('SELECT count(*) FROM customers')['count(*)'];
+        return new Response((string) $res);
 
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
