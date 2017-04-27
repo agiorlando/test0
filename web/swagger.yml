@@ -25,22 +25,27 @@ paths:
         - "application/x-www-form-urlencoded"
       parameters:
         - name: firstName
+          description: First name of the customer.
           in: formData
           required: true
           type: string
         - name: lastName
+          description: Last name of the customer.
           in: formData
           required: true
           type: string
         - name: email
+          description: E-mail address of the customer. Not validated, but has to be unique.
           in: formData
           required: true
           type: string
         - name: country
+          description: The ISO two-character country code of where the customer is located.
           in: formData
           required: true
           type: string
         - name: gender
+          description: Either 'm' for male, 'f' for female or 'o' for other.
           in: formData
           required: true
           type: string
@@ -59,22 +64,28 @@ paths:
         - "application/x-www-form-urlencoded"
       parameters:
         - name: customerId
+          description: ID of the customer to make a modification for.
           in: path
           type: integer
           required: true
         - name: firstName
+          description: First name of the customer.
           in: formData
           type: string
         - name: lastName
+          description: Last name of the customer.
           in: formData
           type: string
         - name: email
+          description: E-mail address of the customer. Not validated, but has to be unique.
           in: formData
           type: string
         - name: country
+          description: The ISO two-character country code of where the customer is located.
           in: formData
           type: string
         - name: gender
+          description: Either 'm' for male, 'f' for female or 'o' for other.
           in: formData
           type: string
       responses:
@@ -103,17 +114,24 @@ paths:
         - "application/x-www-form-urlencoded"
       parameters:
         - name: customerId
+          description: The ID of the customer to make a transaction for.
           in: path
           required: true
           type: integer
         - name: amount
+          description: The amount to be debited or credited in cents (integer, not floating point). Negative number will debit, positive number will credit.
           in: formData
           required: true
           type: integer
         - name: country
+          description: The ISO two-character country code of where the transaction was made from.
           in: formData
           required: true
           type: string
       responses:
         201:
           description: "Transaction has been created successfully"
+        400:
+          description: "Transaction not made due to client error"
+        404:
+          description: "Customer does not exist"
