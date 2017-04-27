@@ -22,7 +22,7 @@ Once all containers are fetched and running, you can access the project at the f
 
 Easy interaction with the API is possible using the Swagger UI:
 
-* [http://localhost:5500/swagger](http://localhost:5500/swagger)
+* [http://localhost:5500/swagger/index.html](http://localhost:5500/swagger/index.html)
 
 To halt the containers:
 
