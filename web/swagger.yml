@@ -110,6 +110,10 @@ paths:
           in: formData
           required: true
           type: integer
+        - name: country
+          in: formData
+          required: true
+          type: string
       responses:
         201:
           description: "Transaction has been created successfully"

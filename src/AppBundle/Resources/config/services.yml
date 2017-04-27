@@ -3,3 +3,8 @@ services:
         class: AppBundle\Repository\CustomerRepository
         arguments:
           - "@database_connection"
+
+    app.repository.transaction:
+        class: AppBundle\Repository\TransactionRepository
+        arguments:
+          - "@database_connection"

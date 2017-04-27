@@ -3,6 +3,8 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\Customer;
+use AppBundle\Entity\Transaction;
+use AppBundle\Exception\InsufficientFundsError;
 use AppBundle\Exception\NotUniqueEmailError;
 use Doctrine\DBAL\Connection;
 
@@ -59,6 +61,14 @@ class CustomerRepository
         return $customer;
     }
 
+    /**
+     * Insert a Customer row into the database, and write the inserted ID
+     * back into the entity object.
+     *
+     * @param Customer $customer
+     *
+     * @return Customer
+     */
     private function insert(Customer $customer)
     {
         $this->dbal->insert('customers', [
@@ -77,6 +87,13 @@ class CustomerRepository
         return $customer;
     }
 
+    /**
+     * Update a Customer row in the database.
+     *
+     * @param Customer $customer
+     *
+     * @return Customer
+     */
     private function update(Customer $customer)
     {
         $this->dbal->update('customers', [
@@ -85,6 +102,8 @@ class CustomerRepository
             'gender' => $customer->getGender(),
             'email' => $customer->getEmail(),
             'country' => $customer->getCountry(),
+            'balance' => $customer->getBalance(),
+            'balance_bonus' => $customer->getBonusBalance(),
         ], ['id' => $customer->getId()]);
 
         return $customer;
@@ -126,6 +145,15 @@ class CustomerRepository
         return $this->hydrateCustomer($row, new Customer());
     }
 
+    /**
+     * Hydrate a Customer entity based on an array representing a
+     * row from the database table.
+     *
+     * @param array    $row
+     * @param Customer $obj
+     *
+     * @return Customer
+     */
     private function hydrateCustomer($row, Customer $obj)
     {
         $obj->setId($row['id']);
@@ -139,5 +167,26 @@ class CustomerRepository
         $obj->setBonusPercentage($row['bonus_pct']);
 
         return $obj;
+    }
+
+    /**
+     * Update the balance of a customer, but throw an exception if the balance
+     * would become negative.
+     *
+     * @param Customer    $customer
+     * @param Transaction $transaction
+     *
+     * @throws InsufficientFundsError
+     */
+    public function updateBalance(Customer $customer, Transaction $transaction)
+    {
+        if ($customer->getBalance() + $transaction->getAmount() < 0) {
+            throw new InsufficientFundsError();
+        }
+
+        $customer->setBalance($customer->getBalance() + $transaction->getAmount());
+        $customer->setBonusBalance($customer->getBonusBalance() + $transaction->getBonus());
+
+        $this->update($customer);
     }
 }

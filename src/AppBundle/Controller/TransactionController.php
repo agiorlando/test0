@@ -2,11 +2,16 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Transaction;
+use AppBundle\Exception\AppException;
+use AppBundle\Exception\EntityNotFoundError;
+use AppBundle\Exception\ValidationError;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class TransactionController extends Controller
 {
@@ -16,7 +21,52 @@ class TransactionController extends Controller
      */
     public function createTransactionAction(Request $request, $customerId)
     {
-        return new JsonResponse([], 201);
+        try {
+            $customerRepo = $this->get('app.repository.customer');
+            $txRepo = $this->get('app.repository.transaction');
+
+            $customer = $customerRepo->getById($customerId);
+
+            if (is_null($customer)) {
+                throw new EntityNotFoundError('Customer does not exist.');
+            }
+
+            $transaction = new Transaction($customer);
+            $transaction->setCountry($request->get('country'));
+            $transaction->setAmount($request->get('amount'));
+
+            $validator = $this->get('validator');
+            $errors = $validator->validate($transaction);
+
+            if (count($errors) > 0) {
+                throw new ValidationError($errors->get(0)->getMessage());
+            }
+
+            $txRepo->transactional(function () use ($txRepo, $customerRepo, $transaction, $customer) {
+                // Step 1: Ascertain the bonus for this transaction
+                $bonus = $txRepo->getNextBonusForCustomer($customer, $transaction);
+                $transaction->setBonus($bonus);
+
+                // Step 2: Update the balance of the customer
+                $customerRepo->updateBalance($customer, $transaction);
+
+                // Step 3: Store the transaction in the database
+                $txRepo->persist($transaction);
+            });
+
+            return new JsonResponse([
+                'balance' => $customer->getBalance() + $customer->getBonusBalance(),
+                'availableBalance' => intval($customer->getBalance()),
+                'bonus' => $transaction->getBonus(),
+            ], 201);
+        } catch (AppException $e) {
+            // Application errors with custom status codes
+            return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
+        } catch (\Exception $e) {
+            // Unexpected errors that we cannot deal with
+            return new JsonResponse(['error' => 'An unexpected error has occured.'],
+                Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
