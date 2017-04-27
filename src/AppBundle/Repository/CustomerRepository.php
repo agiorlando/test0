@@ -33,7 +33,9 @@ class CustomerRepository
         $c = $this->getByEmail($customer->getEmail());
 
         if (!is_null($c) && $c->getEmail() == $customer->getEmail()) {
-            throw new \Exception('E-mail already exists.');
+            if (is_null($customer->getId()) || $customer->getId() != $c->getId()) {
+                throw new \Exception('E-mail already exists.');
+            }
         }
 
         $this->dbal->beginTransaction();
@@ -48,6 +50,7 @@ class CustomerRepository
             $this->dbal->commit();
         } catch (\Exception $e) {
             $this->dbal->rollBack();
+            throw $e; // rethrow
         }
 
         return $customer;
@@ -74,12 +77,12 @@ class CustomerRepository
     private function update(Customer $customer)
     {
         $this->dbal->update('customers', [
-            'fist_name' => $customer->getFirstName(),
+            'first_name' => $customer->getFirstName(),
             'last_name' => $customer->getLastName(),
             'gender' => $customer->getGender(),
             'email' => $customer->getEmail(),
             'country' => $customer->getCountry(),
-        ], [$customer->getId()]);
+        ], ['id' => $customer->getId()]);
 
         return $customer;
     }

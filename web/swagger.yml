@@ -47,6 +47,8 @@ paths:
       responses:
         201:
           description: "Customer has been created successfully"
+        400:
+          description: "Customer not created due to client error"
 
   /customers/{customerId}:
     patch:
@@ -62,27 +64,26 @@ paths:
           required: true
         - name: firstName
           in: formData
-          required: true
           type: string
         - name: lastName
           in: formData
-          required: true
           type: string
         - name: email
           in: formData
-          required: true
           type: string
         - name: country
           in: formData
-          required: true
           type: string
         - name: gender
           in: formData
-          required: true
           type: string
       responses:
         200:
           description: "Customer has been updated successfully"
+        400:
+          description: "Customer not updated due to client error"
+        404:
+          description: "Customer does not exist"
 
   /transactions:
     get:

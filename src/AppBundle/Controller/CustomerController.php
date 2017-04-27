@@ -25,6 +25,12 @@ class CustomerController extends Controller
             ? new Customer()
             : $repo->getById($customerId);
 
+        if (is_null($customer)) {
+            return new JsonResponse([
+                'error' => 'Customer does not exist.',
+            ], 404);
+        }
+
         $customer->setFirstName($request->get('firstName', $customer->getFirstName()));
         $customer->setLastName($request->get('lastName', $customer->getLastName()));
         $customer->setEmail($request->get('email', $customer->getEmail()));
