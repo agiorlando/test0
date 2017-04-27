@@ -1,0 +1,85 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: 'Transaction API'
+  description: 'The public API for the test0 project'
+
+host: "localhost:5500"
+basePath: "/"
+schemes:
+- "http"
+
+tags:
+  - name: "transactions"
+    description: "Operations related to financial transactions"
+  - name: "customers"
+    description: "Operations related to managing users"
+
+paths:
+  /customers:
+    put:
+      tags:
+        - customers
+      summary: "Create a new customer"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      parameters:
+        - name: firstName
+          in: formData
+          required: true
+          type: string
+        - name: lastName
+          in: formData
+          required: true
+          type: string
+        - name: email
+          in: formData
+          required: true
+          type: string
+        - name: country
+          in: formData
+          required: true
+          type: string
+        - name: gender
+          in: formData
+          required: true
+          type: string
+      responses:
+        201:
+          description: "Customer has been created successfully"
+
+  /customers/{customerId}:
+    patch:
+      tags:
+        - customers
+      summary: "Update an existing customer"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      parameters:
+        - name: customerId
+          in: path
+          type: integer
+          required: true
+        - name: firstName
+          in: formData
+          required: true
+          type: string
+        - name: lastName
+          in: formData
+          required: true
+          type: string
+        - name: email
+          in: formData
+          required: true
+          type: string
+        - name: country
+          in: formData
+          required: true
+          type: string
+        - name: gender
+          in: formData
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Customer has been updated successfully"

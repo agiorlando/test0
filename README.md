@@ -20,6 +20,10 @@ Once all containers are fetched and running, you can access the project at the f
 
 * [http://localhost:5500](http://localhost:5500)
 
+Easy interaction with the API is possible using the Swagger UI:
+
+* [http://localhost:5500/swagger](http://localhost:5500/swagger)
+
 To halt the containers:
 
 ```
@@ -71,6 +75,14 @@ Run the PHP code style check like this:
 $ make style
 ```
 
+#### Run the unit tests
+
+Run the unittests like this:
+
+```
+$ make test
+```
+
 #### Access application container shell
  
 To enter a bash shell in the application container:
@@ -84,5 +96,5 @@ $ make shell
 To enter a MySQL prompt in the database container:
 
 ```
-mysql -h 127.0.0.1 -u test0 -ptest0_pw test0
+$ mysql -h 127.0.0.1 -u test0 -ptest0_pw test0
 ```
