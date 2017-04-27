@@ -100,7 +100,12 @@ paths:
     get:
       tags:
         - transactions
-      summary: "Get a list of transactions"
+      summary: "Get a list of transactions grouped by date and country for a certain period"
+      parameters:
+        - name: days
+          description: Length of the period in days of which the transactions will be exported. If not filled in, will default to transactions from the last 7 days.
+          in: query
+          type: integer
       responses:
         200:
           description: "List of transactions has been retrieved successfully"

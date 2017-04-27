@@ -91,4 +91,90 @@ class TransactionRepository
             \PDO::PARAM_INT,
         ]);
     }
+
+    /**
+     * Get a transaction overview for a certain amount of days.
+     *
+     * @param int $days
+     *
+     * @return array
+     */
+    public function getReport($days)
+    {
+        // Step 1: Gather the report of sums - as much as can be queried at once
+        $query = '
+          SELECT 
+            DATE(event_date) as date, 
+            COUNT(DISTINCT(user_id)) as total_customers, 
+            country, 
+            -SUM(CASE WHEN amount<0 THEN amount ELSE 0 END) as total_withdrawn,
+            0 AS withdrawal_count,
+            SUM(CASE WHEN amount>=0 THEN amount ELSE 0 END) as total_deposited,
+            0 AS deposit_count,
+            SUM(bonus) as bonus_earned 
+          FROM
+            transactions
+          WHERE 
+            event_date BETWEEN (NOW() - INTERVAL %d DAY) AND NOW()
+          GROUP BY 
+            DATE(event_date), 
+            country        
+        ';
+
+        $data = $this->dbal->fetchAll(sprintf($query, intval($days)));
+
+        // Step 2: Merge in the count of withdrawals for the same period
+        $query = '
+          SELECT 
+            DATE(event_date) as date, 
+            country, 
+            COUNT(id) as times_withdrawn 
+          FROM 
+            transactions 
+          WHERE 
+            amount <0 
+            AND event_date BETWEEN (NOW() - INTERVAL %d DAY) AND NOW()
+          GROUP BY
+            DATE(event_date), 
+            country
+        ';
+
+        $withdrawalCount = $this->dbal->fetchAll(sprintf($query, intval($days)));
+
+        foreach ($withdrawalCount as $row) {
+            foreach ($data as $k => $v) {
+                if ($v['date'] == $row['date'] && $v['country'] == $row['country']) {
+                    $data[$k]['withdrawal_count'] = $row['times_withdrawn'];
+                }
+            }
+        }
+
+        // Step 3: Merge in the count of deposits for the same period
+        $query = '
+          SELECT 
+            DATE(event_date) as date, 
+            country, 
+            COUNT(id) as times_deposited 
+          FROM 
+            transactions 
+          WHERE 
+            amount >0 
+            AND event_date BETWEEN (NOW() - INTERVAL %d DAY) AND NOW()
+          GROUP BY
+            DATE(event_date), 
+            country
+        ';
+
+        $depositCount = $this->dbal->fetchAll(sprintf($query, intval($days)));
+
+        foreach ($depositCount as $row) {
+            foreach ($data as $k => $v) {
+                if ($v['date'] == $row['date'] && $v['country'] == $row['country']) {
+                    $data[$k]['deposit_count'] = $row['times_deposited'];
+                }
+            }
+        }
+
+        return $data;
+    }
 }

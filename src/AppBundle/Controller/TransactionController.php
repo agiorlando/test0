@@ -75,6 +75,8 @@ class TransactionController extends Controller
      */
     public function transactionReportAction(Request $request)
     {
-        return new JsonResponse([], 200);
+        $txRepo = $this->get('app.repository.transaction');
+
+        return new JsonResponse($txRepo->getReport($request->get('days', 7)), 200);
     }
 }
