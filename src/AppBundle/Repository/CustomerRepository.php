@@ -3,6 +3,7 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\Customer;
+use AppBundle\Exception\NotUniqueEmailError;
 use Doctrine\DBAL\Connection;
 
 class CustomerRepository
@@ -30,17 +31,17 @@ class CustomerRepository
      */
     public function persist(Customer $customer)
     {
-        $c = $this->getByEmail($customer->getEmail());
-
-        if (!is_null($c) && $c->getEmail() == $customer->getEmail()) {
-            if (is_null($customer->getId()) || $customer->getId() != $c->getId()) {
-                throw new \Exception('E-mail already exists.');
-            }
-        }
-
         $this->dbal->beginTransaction();
 
         try {
+            $c = $this->getByEmail($customer->getEmail());
+
+            if (!is_null($c) && $c->getEmail() == $customer->getEmail()) {
+                if (is_null($customer->getId()) || $customer->getId() != $c->getId()) {
+                    throw new NotUniqueEmailError();
+                }
+            }
+
             if (is_null($customer->getId())) {
                 $customer = $this->insert($customer);
             } else {
@@ -49,8 +50,10 @@ class CustomerRepository
 
             $this->dbal->commit();
         } catch (\Exception $e) {
+            // Roll back the current transaction, and rethrow the exception
+            // to let the application decide what to do next
             $this->dbal->rollBack();
-            throw $e; // rethrow
+            throw $e;
         }
 
         return $customer;
