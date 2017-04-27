@@ -25,13 +25,7 @@ class TransactionController extends Controller
             $customerRepo = $this->get('app.repository.customer');
             $txRepo = $this->get('app.repository.transaction');
 
-            $customer = $customerRepo->getById($customerId);
-
-            if (is_null($customer)) {
-                throw new EntityNotFoundError('Customer does not exist.');
-            }
-
-            $transaction = new Transaction($customer);
+            $transaction = new Transaction(null);
             $transaction->setCountry($request->get('country'));
             $transaction->setAmount($request->get('amount'));
 
@@ -42,7 +36,14 @@ class TransactionController extends Controller
                 throw new ValidationError($errors->get(0)->getMessage());
             }
 
-            $txRepo->transactional(function () use ($txRepo, $customerRepo, $transaction, $customer) {
+            $txRepo->transactional(function () use ($txRepo, $customerRepo, $transaction, $customerId) {
+                $customer = $customerRepo->getById($customerId);
+                $transaction->setCustomer($customer);
+
+                if (is_null($customer)) {
+                    throw new EntityNotFoundError('Customer does not exist.');
+                }
+
                 // Step 1: Ascertain the bonus for this transaction
                 $bonus = $txRepo->getNextBonusForCustomer($customer, $transaction);
                 $transaction->setBonus($bonus);
@@ -53,6 +54,8 @@ class TransactionController extends Controller
                 // Step 3: Store the transaction in the database
                 $txRepo->persist($transaction);
             });
+
+            $customer = $transaction->getCustomer();
 
             return new JsonResponse([
                 'balance' => $customer->getBalance() + $customer->getBonusBalance(),

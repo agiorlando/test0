@@ -43,13 +43,10 @@ class Transaction
 
     /**
      * Transaction constructor.
-     *
-     * @param Customer $customer
      */
-    public function __construct(Customer $customer)
+    public function __construct()
     {
         $this->setEventDate(new \DateTime());
-        $this->setCustomer($customer);
         $this->setBonus(0);
     }
 
