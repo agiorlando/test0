@@ -7,7 +7,7 @@ info:
 host: "localhost:5500"
 basePath: "/"
 schemes:
-- "http"
+  - "http"
 
 tags:
   - name: "transactions"
@@ -83,3 +83,32 @@ paths:
       responses:
         200:
           description: "Customer has been updated successfully"
+
+  /transactions:
+    get:
+      tags:
+        - transactions
+      summary: "Get a list of transactions"
+      responses:
+        200:
+          description: "List of transactions has been retrieved successfully"
+
+  /customers/{customerId}/transactions:
+    put:
+      tags:
+        - transactions
+      summary: "Create a new transaction"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          type: integer
+        - name: amount
+          in: formData
+          required: true
+          type: integer
+      responses:
+        201:
+          description: "Transaction has been created successfully"
