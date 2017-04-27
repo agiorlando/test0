@@ -8,3 +8,4 @@ services:
         class: AppBundle\Repository\TransactionRepository
         arguments:
           - "@database_connection"
+          - %app_bonus_iteration%

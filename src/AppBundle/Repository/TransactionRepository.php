@@ -27,7 +27,7 @@ class TransactionRepository
     public function __construct($dbal, $bonusIteration = 3)
     {
         $this->dbal = $dbal;
-        $this->bonusIteration = 3;
+        $this->bonusIteration = $bonusIteration;
     }
 
     /**
